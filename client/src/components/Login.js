@@ -1,15 +1,40 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+const BASE_URL = "http://localhost:4000/api";
+
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
+  const postLoginDetails = () => {
+    fetch(BASE_URL + "/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.error_message) {
+          alert(data.error_message);
+        } else {
+          console.log(data.data);
+          localStorage.setItem("username", data.data.username);
+          navigate("/phone/verify");
+        }
+      });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({ email, password });
+    postLoginDetails();
+    setPassword("");
+    setEmail("");
   };
+
   const gotoSignUpPage = () => navigate("/register");
 
   return (

@@ -1,15 +1,33 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+const BASE_URL = "http://localhost:4000/api";
+
 export default function PhoneVerify() {
   const [code, setCode] = useState("");
   const navigate = useNavigate();
 
+  const postVerification = () => {
+    fetch(BASE_URL + "/verification", {
+      method: "POST",
+      body: JSON.stringify({ code }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.error_message) {
+          alert(data.error_message);
+        } else {
+          navigate("/dashboard");
+        }
+      });
+  };
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({ code });
+    postVerification();
     setCode("");
-    navigate("/dashboard");
   };
 
   return (
